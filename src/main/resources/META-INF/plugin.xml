@@ -1,0 +1,30 @@
+<idea-plugin>
+    <id>org.example.MyIdeaPlugin</id>
+    <name>Example Name</name>
+    <vendor email="kangjie0603@163.com" >kangjie0603@163.com</vendor>
+
+    <description><![CDATA[
+    Demonstrates implementing a Local Inspection Tool
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <localInspection language="JAVA"
+                         displayName="ZKJ: String variable check'"
+                         groupPath="Java"
+                         groupBundle="messages.InspectionsBundle"
+                         groupKey="group.names.probable.bugs"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.example.references.InspectionDemo"/>
+        <psi.referenceContributor implementation="com.example.inspection.ReferenceContributorDemo"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
