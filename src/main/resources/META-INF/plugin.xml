@@ -9,6 +9,7 @@
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -21,7 +22,8 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.example.references.InspectionDemo"/>
-        <psi.referenceContributor implementation="com.example.inspection.ReferenceContributorDemo"/>
+        <psi.referenceContributor language="JAVA" implementation="com.example.inspection.ReferenceContributorDemo"/>
+        <completion.contributor language="JAVA" implementationClass="com.example.completion.CompletionContributorDemo"/>
     </extensions>
 
     <actions>

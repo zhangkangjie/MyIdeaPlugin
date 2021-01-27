@@ -43,7 +43,6 @@ public class ReferenceContributorDemo extends PsiReferenceContributor {
                 return new PsiReference[0];
             }
         };
-//        PsiAnnotationPattern psiAnnotationPattern = PsiJavaPatterns.psiAnnotation().qName("com.zkj.Check");
         registrar.registerReferenceProvider(StandardPatterns.instanceOf(PsiLiteral.class),referenceProvider);
     }
 }
