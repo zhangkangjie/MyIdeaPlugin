@@ -72,7 +72,7 @@ public class InspectionDemo extends AbstractBaseJavaLocalInspectionTool {
                 int index = text.indexOf(variableName);
                 TextRange variableTextRange = TextRange.create(index, index + variableName.length());
                 ProblemDescriptor problemDescriptor =
-                        inspectionManager.createProblemDescriptor(child, variableTextRange, "Check variable  #ref #loc ", ProblemHighlightType.GENERIC_ERROR_OR_WARNING, true, (LocalQuickFix) null);
+                        inspectionManager.createProblemDescriptor(child, variableTextRange, "Check variable  #ref #loc ", ProblemHighlightType.ERROR, true, (LocalQuickFix) null);
 
                 problemDescriptors.add(problemDescriptor);
             }
