@@ -25,31 +25,36 @@ public class InspectionDemo extends AbstractBaseJavaLocalInspectionTool {
         ArrayList<ProblemDescriptor> problemDescriptors = new ArrayList<>();
         InspectionManager inspectionManager = InspectionManager.getInstance(method.getProject());
         PsiParameterList parameters = method.getParameterList();
-        PsiAnnotation annotation = method.getAnnotation(AnnotationClasses.CHECK);
+        PsiAnnotation annotation = method.getAnnotation(AnnotationClasses.ROSE_SQL);
         if (annotation != null) {
             PsiAnnotationMemberValue attributeValue = annotation.findAttributeValue("value");
             if (attributeValue != null) {
-                PsiElement[] children = attributeValue.getChildren();
-                for (PsiElement child : children) {
-                    if (child instanceof PsiLiteralExpression) {
-                        checkVariableProblem(problemDescriptors, inspectionManager, (PsiLiteralExpression) child, parameters);
-                    }
-                    if (child instanceof PsiReferenceExpression) {
-                        PsiReferenceExpression ref = (PsiReferenceExpression) child;
-
-                        PsiElement resolve = ref.resolve();
-                        if (!(resolve instanceof PsiField)) {
-                            continue;
+                if (attributeValue instanceof PsiLiteralExpression){
+                    checkVariableProblem(problemDescriptors, inspectionManager, (PsiLiteralExpression) attributeValue, parameters);
+                }else {
+                    PsiElement[] children = attributeValue.getChildren();
+                    for (PsiElement child : children) {
+                        if (child instanceof PsiLiteralExpression) {
+                            checkVariableProblem(problemDescriptors, inspectionManager, (PsiLiteralExpression) child, parameters);
                         }
-                        PsiField field = (PsiField) resolve;
-                        for (PsiElement fieldChild : field.getChildren()) {
-                            if (fieldChild instanceof PsiLiteralExpression) {
-                                checkVariableProblem(problemDescriptors, inspectionManager, (PsiLiteralExpression) fieldChild, parameters);
+                        if (child instanceof PsiReferenceExpression) {
+                            PsiReferenceExpression ref = (PsiReferenceExpression) child;
+
+                            PsiElement resolve = ref.resolve();
+                            if (!(resolve instanceof PsiField)) {
+                                continue;
+                            }
+                            PsiField field = (PsiField) resolve;
+                            for (PsiElement fieldChild : field.getChildren()) {
+                                if (fieldChild instanceof PsiLiteralExpression) {
+                                    checkVariableProblem(problemDescriptors, inspectionManager, (PsiLiteralExpression) fieldChild, parameters);
+                                }
+
                             }
 
                         }
-
                     }
+
                 }
             }
             ProblemDescriptor[] proArr = new ProblemDescriptor[problemDescriptors.size()];
@@ -66,9 +71,16 @@ public class InspectionDemo extends AbstractBaseJavaLocalInspectionTool {
         while (matcher.find()) {
             String variableName = matcher.group(1);
             PsiParameter[] params = parameters.getParameters();
-            List<String> paramNames = Arrays.stream(params).map(PsiParameter::getName).collect(Collectors.toList());
-            if (!paramNames.contains(variableName)) {
-                //System.out.println(variableName);
+//            List<String> paramNames = Arrays.stream(params).map(PsiParameter::getName).collect(Collectors.toList());
+            List<Object> sqlParamValues = Arrays.stream(params)
+                    .flatMap(p -> Arrays.stream(p.getAnnotations()))
+                    .filter(p -> p.hasQualifiedName(AnnotationClasses.ROSE_SQL_PARAM))
+                    .map(psiAnnotation -> psiAnnotation.findAttributeValue("value"))
+                    .map(value -> ((PsiLiteralExpression) value).getValue())
+                    .collect(Collectors.toList());
+//            if (!paramNames.contains(variableName)) {
+            if (!sqlParamValues.contains(variableName)) {
+//                System.out.println(variableName);
                 int index = text.indexOf(variableName);
                 TextRange variableTextRange = TextRange.create(index, index + variableName.length());
                 ProblemDescriptor problemDescriptor =

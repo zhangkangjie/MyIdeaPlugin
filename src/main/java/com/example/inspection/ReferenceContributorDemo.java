@@ -2,7 +2,7 @@ package com.example.inspection;
 
 import com.example.AnnotationClasses;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.patterns.*;
+import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
@@ -23,7 +23,7 @@ public class ReferenceContributorDemo extends PsiReferenceContributor {
             @Override
             public @NotNull PsiReference[] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
                 PsiAnnotation psiAnnotation = PsiTreeUtil.getParentOfType(element, PsiAnnotation.class);
-                if (psiAnnotation !=null && Objects.equals(psiAnnotation.getQualifiedName(), AnnotationClasses.CHECK)){
+                if (psiAnnotation !=null && Objects.equals(psiAnnotation.getQualifiedName(), AnnotationClasses.ROSE_SQL)){
                     PsiLiteralExpression literalExpression = (PsiLiteralExpression) element;
                     String text = literalExpression.getText();
                     if (text != null){

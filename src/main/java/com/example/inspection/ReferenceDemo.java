@@ -1,12 +1,10 @@
 package com.example.inspection;
 
+import com.example.AnnotationClasses;
 import com.intellij.model.Symbol;
 import com.intellij.model.SymbolResolveResult;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiParameter;
-import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,10 +42,20 @@ public class ReferenceDemo extends PsiReferenceBase<PsiElement> /*implements Psi
             String text =  myElement.getText();
             String var = text.substring(range.getStartOffset(),range.getEndOffset());
 
-            Optional<@NotNull PsiParameter> optional = Arrays.stream(method.getParameterList().getParameters())
-                    .filter(p -> p.getName().equals(var)).findFirst();
+//            Optional<@NotNull PsiParameter> optional = Arrays.stream(method.getParameterList().getParameters())
+//                    .filter(p -> p.getName().equals(var)).findFirst();
+
+            Optional<PsiAnnotationMemberValue> optional = Arrays.stream(method.getParameterList().getParameters())
+                    .flatMap(p -> Arrays.stream(p.getAnnotations()))
+                    .filter(p -> p.hasQualifiedName(AnnotationClasses.ROSE_SQL_PARAM))
+                    .map(psiAnnotation -> psiAnnotation.findAttributeValue("value"))
+                    .filter(value -> ((PsiLiteralExpression) value).getValue().equals(var))
+                    .findFirst();
             if (optional.isPresent()){
-                return optional.get();
+                //return optional.get();
+                PsiLiteralExpression literalExpression = (PsiLiteralExpression) optional.get();
+
+                return literalExpression.getFirstChild();
             }
         }
         return null;
